@@ -1,0 +1,9 @@
+package:
+  name: volundr-repl
+  dependencies:
+    - console
+    - effect
+    - prelude
+  test:
+    main: Test.Main
+    dependencies: []
