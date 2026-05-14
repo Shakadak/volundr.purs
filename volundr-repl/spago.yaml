@@ -3,6 +3,8 @@ package:
   dependencies:
     - console
     - effect
+    - node-readline
+    - optparse
     - prelude
   test:
     main: Test.Main

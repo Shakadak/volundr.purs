@@ -3,9 +3,13 @@ module Main where
 import Prelude
 
 import Effect (Effect)
-import Effect.Console (log)
+import Node.EventEmitter (on_)
+import Node.ReadLine (createConsoleInterface, lineH, noCompletion, prompt, setPrompt)
+import Read (lineHandler)
 
 main :: Effect Unit
 main = do
-  log "🍝"
-
+  interface <- createConsoleInterface noCompletion
+  setPrompt "> " interface
+  prompt interface
+  interface # on_ lineH (lineHandler interface)
