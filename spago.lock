@@ -7,6 +7,8 @@
           "dependencies": [
             "console",
             "effect",
+            "js-promise-aff",
+            "node-process",
             "node-readline",
             "optparse",
             "prelude"
@@ -1024,6 +1026,37 @@
       "dependencies": [
         "control",
         "prelude"
+      ]
+    },
+    "js-promise": {
+      "type": "registry",
+      "version": "1.0.0",
+      "integrity": "sha256-u+6+ofIwT5XhT2fbMu4dShwkyWGfPRt9642Cnzw/Wvk=",
+      "dependencies": [
+        "effect",
+        "exceptions",
+        "foldable-traversable",
+        "functions",
+        "maybe",
+        "newtype",
+        "prelude"
+      ]
+    },
+    "js-promise-aff": {
+      "type": "registry",
+      "version": "1.0.0",
+      "integrity": "sha256-gEKAdNnTWjXS+tTp/AhYl/ezloKfuoQFcBKrdOx2USo=",
+      "dependencies": [
+        "aff",
+        "control",
+        "effect",
+        "either",
+        "exceptions",
+        "foreign",
+        "js-promise",
+        "maybe",
+        "prelude",
+        "transformers"
       ]
     },
     "lazy": {

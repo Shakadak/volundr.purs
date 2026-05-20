@@ -3,6 +3,8 @@ package:
   dependencies:
     - console
     - effect
+    - js-promise-aff
+    - node-process
     - node-readline
     - optparse
     - prelude
