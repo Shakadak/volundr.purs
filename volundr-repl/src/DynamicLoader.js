@@ -1,3 +1,4 @@
 export function loadJsModule(path) {
-  return () => import(path)
+  // Minimal cache-busting.
+  return () => import(`${path}#${Date.now()}`)
 }
