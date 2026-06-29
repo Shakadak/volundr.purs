@@ -1,8 +1,10 @@
 package:
   name: volundr-repl
   dependencies:
+    - codec-argonaut
     - console
     - effect
+    - fetch
     - js-promise-aff
     - node-process
     - node-readline
