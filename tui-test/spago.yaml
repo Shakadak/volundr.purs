@@ -1,0 +1,12 @@
+package:
+  name: tui-test
+  dependencies:
+    - console
+    - debug
+    - effect
+    - prelude
+    - refs
+    - strings
+  test:
+    main: Test.Main
+    dependencies: []
