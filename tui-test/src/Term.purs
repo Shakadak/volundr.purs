@@ -1,6 +1,9 @@
 module Term where
 
 import Prelude
+
+import Data.Maybe (Maybe)
+import Data.Nullable (Nullable, toMaybe)
 import Effect (Effect)
 
 type Size =
@@ -8,9 +11,17 @@ type Size =
   , cols :: Int
   }
 
-type KeyPress =
+type Key =
   { sequence :: String
-  , name :: String
+  , name :: Maybe String
+  , ctrl :: Boolean
+  , meta :: Boolean
+  , shift :: Boolean
+  }
+
+type KeyImpl =
+  { sequence :: String
+  , name :: Nullable String
   , ctrl :: Boolean
   , meta :: Boolean
   , shift :: Boolean
@@ -24,7 +35,14 @@ foreign import onInput :: (String -> Effect Unit) -> Effect (Effect Unit)
 foreign import onResize :: (Size -> Effect Unit) -> Effect (Effect Unit)
 foreign import exit :: Int -> Effect Unit
 foreign import emitKeyPressEvents :: Effect Unit
-foreign import onKeyPress :: (KeyPress -> Effect Unit) -> Effect (Effect Unit)
+foreign import onKeyPressImpl :: (KeyImpl -> Effect Unit) -> Effect (Effect Unit)
+foreign import cursorPos :: Effect {rows :: Int, cols :: Int}
+
+onKeyPress :: (Key -> Effect Unit) -> Effect (Effect Unit)
+onKeyPress cb = onKeyPressImpl $ (cb <<< modifyRecord)
+  where
+    modifyRecord :: KeyImpl -> Key
+    modifyRecord r1 = r1 {name = toMaybe r1.name}
 
 clearScreen :: String
 clearScreen = "\x1b[2J"

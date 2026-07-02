@@ -43,9 +43,14 @@ export const emitKeyPressEvents = () => {
   readline.emitKeypressEvents(process.stdin)
 }
 
-export const onKeyPress = handler => () => {
+export const onKeyPressImpl = handler => () => {
   // process.stdin.on("keypress", console.log)
   const h = (_str, key) => handler(key)()
   process.stdin.on("keypress", h)
   return () => process.stdin.off("keypress", handler)
+}
+
+const rl = readline.createInterface(process.stdin)
+export const cursorPos = () => {
+  return rl.getCursorPos()
 }

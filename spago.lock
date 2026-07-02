@@ -5,8 +5,10 @@
         "path": "tui-test",
         "core": {
           "dependencies": [
+            "console",
             "debug",
             "effect",
+            "nullable",
             "prelude",
             "refs",
             "strings"

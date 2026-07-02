@@ -2,8 +2,9 @@ module Main where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.String as Data.String
-import Debug (trace, traceM)
+import Debug (traceM)
 import Effect (Effect)
 import Effect.Ref as Ref
 import Term as Term
@@ -12,6 +13,8 @@ data Key
   = Backspace
   | Up
   | Down
+  | Left
+  | Right
   | Enter
   | CtrlC
   | Unknown String
@@ -22,11 +25,13 @@ type Model =
   , size :: Term.Size
   }
 
-decodeKey :: Term.KeyPress -> Key
-decodeKey {name: "backspace"} = Backspace
-decodeKey {name: "up"} = Up
-decodeKey {name: "down"} = Down
-decodeKey {name: "return"} = Enter
+decodeKey :: Term.Key -> Key
+decodeKey {name: Just "backspace"} = Backspace
+decodeKey {name: Just "up"} = Up
+decodeKey {name: Just "down"} = Down
+decodeKey {name: Just "left"} = Left
+decodeKey {name: Just "right"} = Right
+decodeKey {name: Just "return"} = Enter
 decodeKey {sequence: "\x03"} = CtrlC
 decodeKey s = Unknown s.sequence
 
@@ -72,7 +77,7 @@ main = do
     }
 
   -- Term.write (Term.alternateScreen <> Term.hideCursor)
-  traceM "before emitKeyPressEvents"
+  -- traceM "before emitKeyPressEvents"
   Term.emitKeyPressEvents
   Term.setRawMode true
   Term.resumeStdin
@@ -83,16 +88,19 @@ main = do
     Ref.modify_ (_ { size = newSize }) ref
     draw =<< Ref.read ref
 
-  traceM "before onKeyPress"
+  -- pos <- Term.cursorPos
+  -- traceM pos
   _ <- Term.onKeyPress \key -> do
-    traceM $ "before decodeKey: " <> show key
+    pos <- Term.cursorPos
+    traceM pos
+    -- traceM $ "before decodeKey: " <> show key
     case decodeKey key of
       CtrlC -> do
         cleanup
         Term.exit 130 -- Ctrl-C exit code
 
       key -> do
-        traceM key
+        -- traceM key
         Ref.modify_ (update key) ref
         draw =<< Ref.read ref
 
