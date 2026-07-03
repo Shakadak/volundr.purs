@@ -2,8 +2,13 @@ module Main where
 
 import Prelude
 
+import Data.Array (replicate)
+import Data.Foldable (any)
+import Data.Int (quot)
 import Data.Maybe (Maybe(..))
+import Data.String (joinWith, length)
 import Data.String as Data.String
+import Data.String.Utils (lines)
 import Debug (traceM)
 import Effect (Effect)
 import Effect.Ref as Ref
@@ -20,8 +25,8 @@ data Key
   | Unknown String
 
 type Model =
-  { selected :: Int
-  , buffer :: String
+  { cursorPos :: Int
+  , input :: String
   , size :: Term.Size
   }
 
@@ -41,25 +46,37 @@ decodeKey s = Unknown s.sequence
 update :: Key -> Model -> Model
 
 update (Unknown s) model = 
-  model { buffer = model.buffer <> s }
+  model { input = model.input <> s }
 
 update Backspace model =
-  model { buffer = Data.String.take (Data.String.length model.buffer - 1) model.buffer }
+  model { input = Data.String.take (Data.String.length model.input - 1) model.input }
 
 update Enter model =
-  model { buffer = model.buffer <> "\n" }
+  model { input = model.input <> "\n" }
 
 update _ model =
   model
 
 render :: Model -> String
 render model =
-  "\r"
-    <> model.buffer
+  Term.clearLine <> "\r" <> model.input
 
-draw :: Model -> Effect Unit
-draw model =
-  Term.write (render model)
+draw :: Model -> Model -> Effect Unit
+draw prev model = Term.write (prevCmd <> out)
+  where
+    prevOut = render prev
+    prevRows = lines prevOut
+    prevCmd  = joinWith "" $ mkCmd =<< prevRows
+    out = render model
+    rows = lines out
+    -- banana = any ((_ > model.size.cols) <<< length) rows
+    _cmd = joinWith "" $ mkCmd =<< rows
+    mkCmd =
+      (_ `replicate` (Term.clearLine <> Term.previousLine 1))
+      <<< (_ `quot` model.size.cols)
+      <<< (_ - 1)
+      <<< length
+      
 
 cleanup :: Effect Unit
 cleanup =
@@ -71,28 +88,21 @@ main = do
   size <- Term.getSize
 
   ref <- Ref.new
-    { selected: 0
-    , buffer: ""
+    { cursorPos: 0
+    , input: ""
     , size
     }
 
-  -- Term.write (Term.alternateScreen <> Term.hideCursor)
-  -- traceM "before emitKeyPressEvents"
   Term.emitKeyPressEvents
   Term.setRawMode true
   Term.resumeStdin
 
-  draw =<< Ref.read ref
+  -- draw =<< Ref.read ref
 
-  _ <- Term.onResize \newSize -> do
+  _ <- Term.onResize \newSize ->
     Ref.modify_ (_ { size = newSize }) ref
-    draw =<< Ref.read ref
 
-  -- pos <- Term.cursorPos
-  -- traceM pos
   _ <- Term.onKeyPress \key -> do
-    pos <- Term.cursorPos
-    traceM pos
     -- traceM $ "before decodeKey: " <> show key
     case decodeKey key of
       CtrlC -> do
@@ -101,7 +111,7 @@ main = do
 
       key -> do
         -- traceM key
-        Ref.modify_ (update key) ref
-        draw =<< Ref.read ref
+        prevModel <- Ref.read ref
+        draw prevModel =<< Ref.modify (update key) ref
 
   pure unit

@@ -36,7 +36,6 @@ foreign import onResize :: (Size -> Effect Unit) -> Effect (Effect Unit)
 foreign import exit :: Int -> Effect Unit
 foreign import emitKeyPressEvents :: Effect Unit
 foreign import onKeyPressImpl :: (KeyImpl -> Effect Unit) -> Effect (Effect Unit)
-foreign import cursorPos :: Effect {rows :: Int, cols :: Int}
 
 onKeyPress :: (Key -> Effect Unit) -> Effect (Effect Unit)
 onKeyPress cb = onKeyPressImpl $ (cb <<< modifyRecord)
@@ -49,6 +48,9 @@ clearScreen = "\x1b[2J"
 
 clearLine :: String
 clearLine = "\x1b[2K"
+
+previousLine :: Int -> String
+previousLine n = "\x1b[" <> show n <> "F"
 
 home :: String
 home = "\x1b[H"

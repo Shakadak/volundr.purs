@@ -8,6 +8,7 @@ package:
     - prelude
     - refs
     - strings
+    - stringutils
   test:
     main: Test.Main
     dependencies: []
