@@ -35,10 +35,7 @@ export const onInput = handler => () => {
 };
 
 export const onResize = handler => () => {
-  const h = () => handler({
-    rows: process.stdout.rows || 24,
-    cols: process.stdout.columns || 80
-  })();
+  const h = () => handler(getSize())();
 
   process.stdout.on("resize", h);
   return () => process.stdout.off("resize", h);
