@@ -45,6 +45,16 @@ onKeyPress cb = onKeyPressImpl $ (cb <<< modifyRecord)
     modifyRecord :: KeyImpl -> Key
     modifyRecord r1 = r1 {name = toMaybe r1.name}
 
+setBracketedPaste :: Boolean -> Effect Unit
+setBracketedPaste true = write "\x1b[?2004h"
+setBracketedPaste false = write "\x1b[?2004l"
+
+bracketedPasteStart :: String
+bracketedPasteStart = "\x1b[200~"
+
+bracketedPasteEnd :: String
+bracketedPasteEnd = "\x1b[201~"
+
 clearScreen :: String
 clearScreen = "\x1b[2J"
 
