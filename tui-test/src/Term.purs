@@ -54,6 +54,9 @@ clearLine = "\x1b[2K"
 previousLine :: Int -> String
 previousLine n = "\x1b[" <> show n <> "F"
 
+moveCursorUp :: Int -> String
+moveCursorUp n = "\x1b[" <> show n <> "A"
+
 home :: String
 home = "\x1b[H"
 
