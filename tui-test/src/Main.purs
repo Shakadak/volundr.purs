@@ -3,15 +3,15 @@ module Main where
 import Prelude
 
 import Data.Array (replicate)
-import Data.Foldable (any)
+import Data.Foldable (intercalate, sum)
 import Data.Int (quot)
 import Data.Maybe (Maybe(..))
-import Data.String (joinWith, length)
+import Data.String (length)
 import Data.String as Data.String
 import Data.String.Utils (lines)
-import Debug (traceM)
 import Effect (Effect)
 import Effect.Ref as Ref
+import Term (traceLogM)
 import Term as Term
 
 data Key
@@ -59,24 +59,24 @@ update _ model =
 
 render :: Model -> String
 render model =
-  Term.clearLine <> "\r" <> model.input
+  model.input
 
 draw :: Model -> Model -> Effect Unit
-draw prev model = Term.write (prevCmd <> out)
+draw prev model = Term.write (cleanUp <> out)
   where
+    prevExpectedLines = sum $ map (countOverflow model.size.cols) $ lines prevOut
+    cleanUp =
+      intercalate (Term.previousLine 1)
+      $ replicate prevExpectedLines ("\r" <> Term.clearLine)
+
+    _expectedLines = sum $ map (countOverflow model.size.cols) $ lines out
     prevOut = render prev
-    prevRows = lines prevOut
-    prevCmd  = joinWith "" $ mkCmd =<< prevRows
     out = render model
-    rows = lines out
-    -- banana = any ((_ > model.size.cols) <<< length) rows
-    _cmd = joinWith "" $ mkCmd =<< rows
-    mkCmd =
-      (_ `replicate` (Term.clearLine <> Term.previousLine 1))
-      <<< (_ `quot` model.size.cols)
+    countOverflow cols =
+      (_ + 1)
+      <<< (_ `quot` cols)
       <<< (_ - 1)
       <<< length
-      
 
 cleanup :: Effect Unit
 cleanup =
@@ -99,18 +99,20 @@ main = do
 
   -- draw =<< Ref.read ref
 
-  _ <- Term.onResize \newSize ->
-    Ref.modify_ (_ { size = newSize }) ref
+  _ <- Term.onResize \newSize -> do
+    model <- Ref.modify (_ { size = newSize }) ref
+    traceLogM model
+    draw model model
 
   _ <- Term.onKeyPress \key -> do
-    -- traceM $ "before decodeKey: " <> show key
+    traceLogM $ "before decodeKey: " <> show key
     case decodeKey key of
       CtrlC -> do
         cleanup
         Term.exit 130 -- Ctrl-C exit code
 
       key -> do
-        -- traceM key
+        traceLogM key
         prevModel <- Ref.read ref
         draw prevModel =<< Ref.modify (update key) ref
 

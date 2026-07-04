@@ -1,5 +1,14 @@
 import readline from "node:readline"
 
+import fs from 'fs'
+import util from 'util'
+const log_file = fs.createWriteStream(process.cwd() + '/debug.log')
+
+export const traceLogImpl = (x, k) => {
+  log_file.write(util.inspect(x, false, null, true) + "\n")
+  return k({})
+}
+
 export const write = s => () => {
   process.stdout.write(s);
 };

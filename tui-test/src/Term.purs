@@ -2,8 +2,10 @@ module Term where
 
 import Prelude
 
+import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toMaybe)
+import Debug (class DebugWarning)
 import Effect (Effect)
 
 type Size =
@@ -72,3 +74,15 @@ resetStyle = "\x1b[0m"
 
 inverse :: String -> String
 inverse s = "\x1b[7m" <> s <> resetStyle
+
+-------------------------------------------------
+
+foreign import traceLogImpl :: forall a b. Fn2 a (Unit -> b) b
+
+traceLog :: forall a b. DebugWarning => a -> (Unit -> b) -> b
+traceLog a k = runFn2 traceLogImpl a k
+
+traceLogM :: forall m a. DebugWarning => Monad m => a -> m Unit
+traceLogM s = do
+  pure unit
+  traceLog s \_ -> pure unit
