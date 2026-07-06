@@ -1,0 +1,12 @@
+{
+	"dependencies": {
+		"@earendil-works/pi-tui": "^0.80.3",
+		"@local/pi-tui-theme-test": "link:../pi-tui-theme-test",
+		"chalk": "^5.6.2"
+	},
+	"devDependencies": {
+		"esbuild": "^0.28.1",
+		"esbuild-copy-static-files": "^0.1.0",
+		"esbuild-plugin-purescript": "^1.1.1"
+	}
+}

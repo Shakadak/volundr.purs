@@ -1,0 +1,14 @@
+package:
+  name: pi-tui-test
+  dependencies:
+    - console
+    - debug
+    - effect
+    - nullable
+    - prelude
+    - refs
+    - strings
+    - stringutils
+  test:
+    main: Test.Main
+    dependencies: []
