@@ -21,7 +21,7 @@ main = do
 
   PiTui.setFocus tui editor
 
-  PiTui.addInputListener tui \data' ->
+  _removeListener <- PiTui.addInputListener tui \data' ->
     when (matchesKey data' "ctrl+c") do
       PiTui.stop tui
       PiTui.exit 130

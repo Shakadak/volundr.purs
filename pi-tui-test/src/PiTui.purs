@@ -55,8 +55,9 @@ foreign import setFocusImpl :: Fn2 Tui Component (Effect Unit)
 setFocus :: Tui -> Component -> Effect Unit
 setFocus tuiInstance component = runFn2 setFocusImpl tuiInstance component
 
-foreign import addInputListenerImpl :: Fn2 Tui (String -> Effect Unit) (Effect Unit)
-addInputListener :: Tui -> (String -> Effect Unit) -> Effect Unit
+foreign import addInputListenerImpl :: Fn2 Tui (String -> Effect Unit) (Effect (Effect Unit))
+-- | Returns the action needed to remove the callback from the listeners.
+addInputListener :: Tui -> (String -> Effect Unit) -> Effect (Effect Unit)
 addInputListener tuiInstance cb = runFn2 addInputListenerImpl tuiInstance cb
 
 foreign import matchesKeyImpl :: Fn2 String String Boolean

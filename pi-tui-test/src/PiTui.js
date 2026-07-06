@@ -18,7 +18,7 @@ export const onSubmitImpl = (cmpnt, onSubmit) => () => {
 
 export const setFocusImpl = (tui, cmpnt) => () => tui.setFocus(cmpnt)
 
-export const addInputListenerImpl = (tui, cb) => tui.addInputListener((data) => { console.log('listener', data) ; cb(data)() })
+export const addInputListenerImpl = (tui, cb) => () => tui.addInputListener((data) => cb(data)())
 
 export const matchesKeyImpl = matchesKey
 
