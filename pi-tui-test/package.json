@@ -1,4 +1,5 @@
 {
+  "type": "module",
 	"dependencies": {
 		"@earendil-works/pi-tui": "^0.80.3",
 		"@local/pi-tui-theme-test": "link:../pi-tui-theme-test",

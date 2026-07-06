@@ -1,5 +1,8 @@
 package:
   name: pi-tui-test
+  bundle:
+    platform: node
+    type: app
   dependencies:
     - console
     - debug
